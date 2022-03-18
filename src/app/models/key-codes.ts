@@ -3,4 +3,5 @@ export const keyCodes =  {
   top: 'KeyW',
   right: 'KeyD',
   bottom: 'KeyS',
+  space: 'Space',
 }
