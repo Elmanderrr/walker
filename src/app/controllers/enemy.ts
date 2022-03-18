@@ -1,9 +1,8 @@
-import { Container, Graphics, Sprite } from 'pixi.js';
+import { Container, Graphics, Sprite, Ticker } from 'pixi.js';
 import { gameConfig } from '../config/game-config';
 import { Position } from '../models/coordinates.interface';
 import { testForAABB } from '../helpers';
 import { Walker } from './walker';
-import Timeout = NodeJS.Timeout;
 
 export class Enemy {
 
@@ -12,6 +11,10 @@ export class Enemy {
     this.sprite.y = y;
 
     this.draw();
+    
+    this.ticker.add(() => {
+      console.log(2)
+    })
   }
 
   public container = new Container();
@@ -19,36 +22,26 @@ export class Enemy {
   public sprite: Sprite = Sprite.from(gameConfig.enemySprite);
   private areaSize: number = 70;
   private attackAreaPos: Position | undefined;
-  private intervalId: Timeout | undefined;
+  private intervalId: NodeJS.Timeout | undefined;
+  private ticker = new Ticker();
 
   public inAttackArea(el: Sprite): boolean {
     return testForAABB(el, this.attackArea)
   }
 
-  public attack(walker: Walker): void {
+  public follow(walker: Walker): void {
     if (this.intervalId) {
       return;
     }
 
     this.intervalId = setInterval(() => {
-      if (walker.sprite.x > this.sprite.x) {
-        this.sprite.x += 1;
-        this.attackArea.x += 1;
-      } else {
-        this.sprite.x -= 1;
-        this.attackArea.x -= 1;
-      }
+      this.container.x = walker.sprite.x > this.sprite.x ? this.container.x + 1 : this.container.x - 1;
+      this.container.y = walker.sprite.y > this.sprite.y ? this.container.y + 1 : this.container.y - 1;
 
-      if (walker.sprite.y > this.sprite.y) {
-        this.sprite.y += 1;
-        this.attackArea.y += 1;
-      } else {
-        this.sprite.y -= 1;
-        this.attackArea.y -=1;
-      }
 
       if (testForAABB(walker.sprite, this.sprite)) {
         this.stopFollowing();
+        this.attack()
       }
 
     }, 100);
@@ -86,4 +79,7 @@ export class Enemy {
     })
   }
 
+  private attack() {
+
+  }
 }

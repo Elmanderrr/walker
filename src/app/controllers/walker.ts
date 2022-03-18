@@ -9,6 +9,7 @@ export class Walker {
 
   }
 
+  private step = 2;
   public sprite: Sprite = Sprite.from(gameConfig.walkerSprite);
 
   public walk$ = new Subject<Sprite>();
@@ -20,17 +21,17 @@ export class Walker {
 
     switch (code) {
       case keyCodes.top:
-        this.sprite.y = this.sprite.y - 10;
+        this.sprite.y -= this.step;
         break;
       case keyCodes.bottom:
-        this.sprite.y = this.sprite.y + 10;
+        this.sprite.y += this.step;
         break;
 
       case keyCodes.right:
-        this.sprite.x = this.sprite.x + 10;
+        this.sprite.x += this.step;
         break;
       case keyCodes.left:
-        this.sprite.x = this.sprite.x - 10;
+        this.sprite.x -= this.step;
         break;
 
     }
@@ -38,10 +39,11 @@ export class Walker {
     this.walk$.next(this.sprite)
   }
 
+
   private cantMove(code: string): boolean {
-    return this.sprite.x - 10 < 0 && code === keyCodes.left
-      || this.sprite.y - 10 < 0 && code === keyCodes.top
-      || this.sprite.y + this.sprite.height + 10 > appConfig.height! && code === keyCodes.bottom
-      || this.sprite.x + this.sprite.width + 10 > appConfig.width! && code === keyCodes.right
+    return this.sprite.x - this.step < 0 && code === keyCodes.left
+      || this.sprite.y - this.step < 0 && code === keyCodes.top
+      || this.sprite.y + this.sprite.height + this.step > appConfig.height! && code === keyCodes.bottom
+      || this.sprite.x + this.sprite.width + this.step > appConfig.width! && code === keyCodes.right
   }
 }
