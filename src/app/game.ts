@@ -1,54 +1,64 @@
-import { Application } from 'pixi.js';
+import { AnimatedSprite, Application } from 'pixi.js';
 import { appConfig } from './config/app-config';
-import { Walker } from './controllers/walker';
-import { Enemy } from './controllers/enemy';
+import { Walker } from './entities/walker';
+import { Enemy } from './entities/enemy';
 import { keyCodes } from './models/key-codes';
-import { merge } from 'rxjs';
+import { BattleController } from './controllers/battle.controller';
+import { EntitiesFabric } from './fabrics/entities.fabric';
+import { resource } from './config/game-config';
+import { LoadedResources } from './loader';
 
 export class Game {
 
-  constructor() {
-    this.app = new Application(appConfig);
-    this.walker = new Walker();
-    this.enemies = [new Enemy(100, 100), new Enemy(150, 200),  new Enemy(230, 200),  new Enemy(270, 200)];
+  constructor(resources: LoadedResources) {
+    this.entitiesFabric = new EntitiesFabric();
 
-    this.interactions();
+    this.app = new Application(appConfig);
+
+    this.walker = new Walker(
+      30,
+      30,
+      new AnimatedSprite(resources[resource.walker].spritesheet!.animations['bandit'])
+    );
+
+    this.enemies = this.entitiesFabric.enemies(5);
+    this.battleController = new BattleController(this);
+    // this.tileMap = new TileMap();
+
+    this.listeners();
     this.draw();
 
   }
 
+  // private tileMap: TileMap;
+  public battleController: BattleController;
+  public entitiesFabric: EntitiesFabric;
   public app: Application;
   public walker: Walker;
   public enemies: Enemy[];
   private pressedKeys: { [key: string]: boolean } = {};
 
   private draw() {
-    document.body.appendChild(this.app.view)
+    document.body.appendChild(this.app.view);
+    // this.app.stage.addChild(this.tileMap.container);
     this.app.stage.addChild(this.walker.container);
 
     this.enemies?.forEach(enemy => {
       this.app.stage.addChild(enemy.container);
     });
+
   }
 
-  private interactions() {
+  private listeners() {
     window.addEventListener('keydown', (e) => this.onKeyDown(e));
     window.addEventListener('keyup', (e) => this.onKeyUp(e));
-    this.app.ticker.add(() => this.gameLoop())
+
+    this.app.ticker.add(() => this.gameLoop());
+
     this.walker.walk$.subscribe(walkerSprite => {
-      this.enemies.forEach(enemy => {
-        if (enemy.inAggroArea(walkerSprite)) {
-          enemy.follow(this.walker)
-        } else {
-          enemy.stopFollowing()
-        }
-      })
+      this.battleController.onWalkerWalk(walkerSprite);
     });
 
-    merge(...this.enemies.map(enemy => enemy.died$))
-      .subscribe(diedEnemy => {
-        this.enemies = this.enemies.filter(enemy => enemy !== diedEnemy)
-      })
   }
 
   private onKeyDown(e: KeyboardEvent): void {
@@ -60,24 +70,12 @@ export class Game {
 
 
     if (e.code === keyCodes.space) {
-      const enemy = this.targetEnemy();
-      if (enemy) {
-        this.walker.attack(enemy);
-      }
+      this.battleController.handleAttackControl()
     }
   }
 
   private gameLoop(): void {
-    [keyCodes.top, keyCodes.bottom, keyCodes.left, keyCodes.right].forEach(code => {
-      if (this.pressedKeys[code]) {
-        this.walker.interactions(code)
-      }
-    });
-
+    this.walker.gameLoop(this.pressedKeys);
   }
 
-  private targetEnemy(): Enemy | null {
-    const enemiesInAttackZone = this.enemies.filter(enemy => enemy.inAttackArea);
-    return enemiesInAttackZone.length ? enemiesInAttackZone[0] : null;
-  }
 }

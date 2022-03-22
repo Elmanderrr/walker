@@ -1,0 +1,47 @@
+{"frames": {
+
+"crab_1.png":
+{
+	"frame": {"x":1,"y":1,"w":48,"h":32},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":48,"h":32},
+	"sourceSize": {"w":48,"h":32}
+},
+"crab_2.png":
+{
+	"frame": {"x":51,"y":1,"w":48,"h":32},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":48,"h":32},
+	"sourceSize": {"w":48,"h":32}
+},
+"crab_3.png":
+{
+	"frame": {"x":101,"y":1,"w":48,"h":32},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":48,"h":32},
+	"sourceSize": {"w":48,"h":32}
+},
+"crab_4.png":
+{
+	"frame": {"x":151,"y":1,"w":48,"h":32},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":48,"h":32},
+	"sourceSize": {"w":48,"h":32}
+}},
+"animations": {
+	"crab": ["crab_1.png","crab_2.png","crab_3.png","crab_4.png"]
+},
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "spritesheet.png",
+	"format": "RGBA8888",
+	"size": {"w":200,"h":34},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:329ac08f04c1dcf6bd76eddc6085fcdc:38827e55db9bdab05427e67bed0aca04:729adc6043343cfda41c447ce8f464d6$"
+}
+}
